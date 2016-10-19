@@ -1,0 +1,12 @@
+/user-config.py
+/bin/
+/include/
+/lib/
+/share/
+/src/
+/t/
+/apicache/
+/pip-selfcheck.json
+/throttle.ctrl
+/__pycache__/
+/pywikibot.lwp
