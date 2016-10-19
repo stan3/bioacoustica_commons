@@ -120,6 +120,9 @@ def upload(site, item):
         add_unit(item, ['RelativeHumidityInitial', 'RelativeHumidityFinal'], '%')
         add_unit(item, ['MicrophonePowerSupplyDistancefromSubjectcm'], 'cm')
 
+# New template created for this
+# Alternate could be {{Musical work}} e.g.
+# https://commons.wikimedia.org/wiki/File:Canada_Geese_(Branta_canadensis)_(W1CDR0001421_BD11).ogg
         upload_or_update(site, item['http_rstdwgorg_ac_terms_accessURI'], filename, """\
 {{BioAcousticaSample
  |description        = Sound recording of %(http_rstdwgorg_dwc_terms_scientificName)s
