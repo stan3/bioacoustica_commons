@@ -156,7 +156,8 @@ def upload(site, item):
  |microphone filter = %(MicrophonePowerSupplyFilter)s
 }}
 
-[[Category:%(wikipedia_category)s]]""" % item)
+[[Category:%(wikipedia_category)s]]
+[[Category:Files from BioAcoustica]]""" % item)
     except KeyError:
         pprint.pprint(item)
         raise
