@@ -38,10 +38,8 @@ def read_items(filename):
 def xml_item(name, text):
   print("  <%s>%s</%s>" % (name, text, name))
 
-
 if __name__ == '__main__':
     print('<items>')
-
     for item in items[:10]:
         if item.get(USAGE_TERMS) == CC_BY and item.get(FORMAT) == WAV:
             print('<record>')
@@ -52,41 +50,3 @@ if __name__ == '__main__':
             xml_item('title', item[TITLE].rsplit('.', 1)[0])
             print('</record>')
     print('</items>')
-
-        #
-        #
-        #
-        #     if extension_row.rowtype == 'http://rs.gbif.org/terms/1.0/Image':
-        #         license = extension_row.data['http://purl.org/dc/terms/license']
-        #         if license in ALLOWED_LICENSES:
-        #             pass
-        #         elif license in DISALLOWED_LICENSES:
-        #             skip = True
-        #         else:
-        #             raise RuntimeError('unknown license ' + license)
-        # if skip:
-        #     continue
-        #
-        # # print(type(core_row.data))
-        # for key, value in core_row.data.items():
-        #     if value:
-        #         print(key, value)
-        #
-        # print('extenions')
-        # for extension_row in core_row.extensions:
-        #     print(extension_row.rowtype)
-        # #     if extension_row.rowtype == 'http://rs.gbif.org/terms/1.0/Image':
-        #         # if extension_row.data['http://purl.org/dc/terms/license'] == '//creativecommons.org/licenses/by/3.0/':
-        #
-        #     for key, value in extension_row.data.items():
-        #         if value:
-        #             print('  ', key, value)
-        #             # print(core_row.data['http://rs.tdwg.org/dwc/terms/scientificName'], '-',
-        #             #     extension_row.data['http://purl.org/dc/terms/identifier'])
-        # print('')
-        #
-        # items.append(d)
-        #     # print(row)
-        # #print(type(core_row))
-        # #print(dir(core_row))
-        # # break

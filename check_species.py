@@ -5,7 +5,6 @@ import sys
 
 import biodwca
 
-
 if __name__ == "__main__":
     dwca_items = {}
     for item in biodwca.read_items(sys.argv[1]):
