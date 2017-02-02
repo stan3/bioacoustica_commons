@@ -2,21 +2,6 @@
 from dwca.read import DwCAReader
 from dwca.darwincore.utils import qualname as qn
 
-CC_BY = '//creativecommons.org/licenses/by/3.0/'
-ALLOWED_LICENSES = ['//creativecommons.org/licenses/by/3.0/']
-DISALLOWED_LICENSES = ['//creativecommons.org/licenses/by-nc-sa/3.0/']
-
-SCIENTIFIC_NAME = 'http://rs.tdwg.org/dwc/terms/scientificName'
-LICENSE = 'http://purl.org/dc/terms/license'
-
-USAGE_TERMS = 'http://ns.adobe.com/xap/1.0/rights/UsageTerms'
-URI = 'http://rs.tdwg.org/ac/terms/accessURI'
-FORMAT = 'http://purl.org/dc/terms/format'
-DOCUMENT = 'http://eol.org/schema/media/Document'
-WAV = 'audio/x-wav'
-TITLE = 'http://purl.org/dc/terms/title'
-
-
 def read_items(filename):
     with DwCAReader(filename) as dwca:
         for core_row in dwca:
@@ -39,6 +24,20 @@ def xml_item(name, text):
   print("  <%s>%s</%s>" % (name, text, name))
 
 if __name__ == '__main__':
+    CC_BY = '//creativecommons.org/licenses/by/3.0/'
+    ALLOWED_LICENSES = ['//creativecommons.org/licenses/by/3.0/']
+    DISALLOWED_LICENSES = ['//creativecommons.org/licenses/by-nc-sa/3.0/']
+
+    SCIENTIFIC_NAME = 'http://rs.tdwg.org/dwc/terms/scientificName'
+    LICENSE = 'http://purl.org/dc/terms/license'
+
+    USAGE_TERMS = 'http://ns.adobe.com/xap/1.0/rights/UsageTerms'
+    URI = 'http://rs.tdwg.org/ac/terms/accessURI'
+    FORMAT = 'http://purl.org/dc/terms/format'
+    DOCUMENT = 'http://eol.org/schema/media/Document'
+    WAV = 'audio/x-wav'
+    TITLE = 'http://purl.org/dc/terms/title'
+
     print('<items>')
     for item in items[:10]:
         if item.get(USAGE_TERMS) == CC_BY and item.get(FORMAT) == WAV:
