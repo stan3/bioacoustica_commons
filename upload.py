@@ -81,11 +81,11 @@ def make_id(s):
 
 
 def check_category(site, item):
-    if item['http://rs.tdwg.org/dwc/terms/taxonRank'] == 'Subspecies':
-        print('Subspecies', item['http://rs.tdwg.org/dwc/terms/scientificName'])
-        category = item['http://rs.tdwg.org/dwc/terms/scientificName'].rsplit(maxsplit=1)[0]
-    else:
-        category = item['http://rs.tdwg.org/dwc/terms/scientificName']
+    # if item['http://rs.tdwg.org/dwc/terms/taxonRank'] == 'Subspecies':
+    #     category = item['http://rs.tdwg.org/dwc/terms/scientificName'].rsplit(maxsplit=1)[0]
+    #     logging.verbose('Subspecies', item['http://rs.tdwg.org/dwc/terms/scientificName'])
+    # else:
+    category = item['http://rs.tdwg.org/dwc/terms/scientificName']
 
     if category == 'Mesambria dubia':
         # a synonmn
@@ -93,6 +93,10 @@ def check_category(site, item):
     if category == 'Chorthippus Glyptobothrus yersini':
         # Glyptobothrus otherwise in brackets, seems subgenus
         category = 'Chorthippus yersini'
+
+    # shorthand for an unspecified species of x
+    if category.endswith(' sp.'):
+        category = category[:-len(' sp.')]
 
     if not pywikibot.Category(site, 'Category:' + category).exists():
         raise RuntimeError("Category doesn't exist: \"%s\"" % category)
