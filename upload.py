@@ -117,23 +117,29 @@ def add_unit(item, keys, suffix):
         if item[key]:
             item[key] = '%s %s' % (item[key], suffix)
 
+
+def get_access_uri(item):
+    return item['http://purl.org/dc/terms/identifier']
+
+
 def upload(site, item):
     filename = "BioAcoustica_%s.flac" % (item['http://purl.org/dc/terms/title'].rsplit('.', 1)[0])
+    item['wikimedia_uri'] = get_access_uri(item)
     item = dict((make_id(key), value) for key, value in item.items())
     try:
         add_unit(item, ['TapeSpeedcm_s'], 'cm/s')
         add_unit(item, ['TemperatureInitialCelsius', 'TemperatureFInalCelsius'], 'c')
         add_unit(item, ['RelativeHumidityInitial', 'RelativeHumidityFinal'], '%')
         add_unit(item, ['MicrophonePowerSupplyDistancefromSubjectcm'], 'cm')
-
 # New template created for this
 # Alternate could be {{Musical work}} e.g.
 # https://commons.wikimedia.org/wiki/File:Canada_Geese_(Branta_canadensis)_(W1CDR0001421_BD11).ogg
-        upload_or_update(site, item['http_rstdwgorg_ac_terms_accessURI'], filename, """\
+
+        upload_or_update(site, item['wikimedia_uri'], filename, """\
 {{BioAcousticaSample
  |description        = Sound recording of %(http_rstdwgorg_dwc_terms_scientificName)s
  |date               = %(DateRecordedStart)s
- |source             = %(http_rstdwgorg_ac_terms_accessURI)s
+ |source             = %(wikimedia_uri)s
  |permission         = {{%(wikimedia_permission_template)s}}
  |copyright holder   = %(CopyrightHolder)s
  |recorder           = %(Recorder)s
