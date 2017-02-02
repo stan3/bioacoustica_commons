@@ -12,12 +12,14 @@ def read_items(filename):
             core['id'] = core_row.id
             # skip = False
             for extension_row in core_row.extensions:
-                d = core.copy()
-                d['extension'] = extension_row.rowtype
-                d.update(dict(extension_row.data.items()))
-                # items.append(d)
-                if d.get(USAGE_TERMS) == CC_BY and d.get(FORMAT) == WAV:
-                    yield d
+                if extension_row.rowtype == 'http://rs.gbif.org/terms/1.0/Image':
+                    # print(extension_row)
+                    d = core.copy()
+                    # d['extension'] = extension_row.rowtype
+                    d.update(dict(extension_row.data.items()))
+                    # items.append(d)
+                    if d.get('http://purl.org/dc/terms/format') == 'audio/x-wav':
+                        yield d
 
 
 def xml_item(name, text):
