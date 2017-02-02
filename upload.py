@@ -2,6 +2,7 @@
 
 import argparse
 import itertools
+import logging
 import os
 import pprint
 import re
@@ -28,7 +29,7 @@ def upload_wav_as_flac(url, site, imagepage):
         subprocess.check_call(['curl', '-o', wav_filename, url])
         subprocess.check_call(['flac', '--best', '-o', flac_filename, wav_filename])
         site.upload(imagepage, source_filename=flac_filename, comment='Initial upload of file')
-        print('creating page http:%s' % imagepage.permalink())
+        logging.info('creating page http:%s', imagepage.permalink())
     finally:
         shutil.rmtree(tempdir, True)
 
@@ -37,15 +38,15 @@ def upload_or_update(site, url, filename, text):
     imagepage = pywikibot.FilePage(site, filename)  # normalizes filename
     if imagepage.exists():
         if imagepage.text != text:
-            print(repr(imagepage.text))
-            print(repr(text))
-            print('updating page http:%s' % imagepage.permalink())
+            # print(repr(imagepage.text))
+            # print(repr(text))
+            logging.info('updating page http:%s', imagepage.permalink())
             # print(imagepage.permalink())
             #print(imagepage.latest_file_info)
             imagepage.text = text
             imagepage.save()
         else:
-            print('page unchanged http:%s' % imagepage.permalink())
+            logging.debug('page unchanged http:%s', imagepage.permalink())
     else:
         imagepage.text = text
         # https://phabricator.wikimedia.org/diffusion/PWBC/browse/master/scripts/upload.py
@@ -67,7 +68,7 @@ def read_xls_by_species_id(filename):
         if '' in key:
             continue
         if key in d:
-            print("ERROR: %s already set" % (key, ))
+            logging.error('read_xls_by_species_id: %s already set', key)
         d[key] = \
             dict(zip(header, (sheet.cell(row_index, col_index).value for col_index in range(sheet.ncols))))
         # values.append(sheet.cell(row_index, col).value)
@@ -164,6 +165,8 @@ def upload(site, item):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
+
     # httplib2 comes with it's on ca_certs that doesn't work with beta's letencrypt cert
     # this hack makes it use the default system one
     for thread in pywikibot.comms.http.threads:
@@ -198,14 +201,14 @@ if __name__ == '__main__':
         try:
             # pprint.pprint(item)
             check_license(item)
-            print(item['http://purl.org/dc/terms/identifier'],
-                  item['http://rs.tdwg.org/ac/terms/accessURI'])
+            # print(item['http://purl.org/dc/terms/identifier'],
+            #       item['http://rs.tdwg.org/ac/terms/accessURI'])
             check_category(site, item)
             xls_key = (item['http://purl.org/dc/terms/title'], item['id'])
             if xls_key in xls:
                 item.update(xls[xls_key])
             else:
-                print("ERROR: no xls item %s" % (xls_key, ))
+                logging.error('no xls item %s', xls_key)
                 continue
             if type(item['Local time']) == float:
                 item['Local time'] = int(item['Local time'])
@@ -214,7 +217,8 @@ if __name__ == '__main__':
             if args.id:
                 break
         except RuntimeError as e:
-            print(e, '-', item['id'])
+            logging.error('%s, %s, %s' % (e, item['id'], get_access_uri(item)))
+            # print(e, '-', item['id'], get_access_uri(item))
         except:
-            # pprint.pprint(item)
+            pprint.pprint(item)
             raise
