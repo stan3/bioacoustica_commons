@@ -26,7 +26,7 @@ def upload_wav_as_flac(url, site, imagepage):
         # local_filename, headers = urllib.request.urlretrieve(url, os.path.join(tempdir, 'in.wav'))
         wav_filename = os.path.join(tempdir, 'in.wav')
         flac_filename = os.path.join(tempdir, 'out.flac')
-        subprocess.check_call(['curl', '-o', wav_filename, url])
+        subprocess.check_call(['curl', '--retry', '3', '-o', wav_filename, url])
         subprocess.check_call(['flac', '--best', '-o', flac_filename, wav_filename])
         site.upload(imagepage, source_filename=flac_filename, comment='Initial upload of file')
         logging.info('creating page http:%s', imagepage.permalink())
