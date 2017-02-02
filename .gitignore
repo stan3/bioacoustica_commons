@@ -1,12 +1,6 @@
-/user-config.py
-/bin/
-/include/
-/lib/
-/share/
-/src/
-/t/
-/apicache/
-/pip-selfcheck.json
-/throttle.ctrl
+/venv/
 /__pycache__/
+/apicache/
+/user-config.py
+/throttle.ctrl
 /pywikibot.lwp

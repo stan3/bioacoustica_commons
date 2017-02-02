@@ -1,5 +1,5 @@
 ## Setup
 
-    virtualenv -p /usr/bin/python3 .
+    python3 -m venv venv
     . bin/activate
     pip install -r requirements.txt
