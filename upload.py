@@ -105,10 +105,11 @@ def check_category(site, item):
 
 def check_license(item):
     licenses = {'//creativecommons.org/licenses/by/3.0/': 'Cc-by-3.0'}
-    if item['http://ns.adobe.com/xap/1.0/rights/UsageTerms'] in licenses:
-        item['wikimedia_permission_template'] = licenses[item['http://ns.adobe.com/xap/1.0/rights/UsageTerms']]
+    license = item['http://purl.org/dc/terms/license']
+    if license in licenses:
+        item['wikimedia_permission_template'] = licenses[license]
     else:
-        raise RuntimeError('Unknown license: %s' % item['http://ns.adobe.com/xap/1.0/rights/UsageTerms'])
+        raise RuntimeError('Unsupported license: %s' % license)
 
 
 def add_unit(item, keys, suffix):
