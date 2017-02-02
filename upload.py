@@ -175,11 +175,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('dwca_zip')
     parser.add_argument('species_xls')
-    parser.add_argument('--id')
-    parser.add_argument('--count', type=int, default=sys.maxsize)
-    parser.add_argument('--skip', type=int, default=0)
     parser.add_argument('--upload', action='store_true')
-    parser.add_argument('--start-id')
     args = parser.parse_args()
 
     site = pywikibot.Site('commons', 'commons')
@@ -189,15 +185,27 @@ if __name__ == '__main__':
     # item = next(items)
     xls = read_xls_by_species_id(args.species_xls)
 
+    skip = '''
+http://bio.acousti.ca/sites/bio.acousti.ca/files/576_15_Locusta_migratoria_migratorioides_253b.wav
+http://bio.acousti.ca/sites/bio.acousti.ca/files/437_6_Chorthippus_yersini_723r1.wav
+http://bio.acousti.ca/sites/bio.acousti.ca/files/566_9_Ancistrura_nigrovittata_638r7.wav
+http://bio.acousti.ca/sites/bio.acousti.ca/files/582_4_Chorthippus_yersini_805r2_14-Dec.wav
+'''
+    skip = skip.strip().split('\n')
+    # print(skip)
+    seen = []
     started_id = False
-    for item in itertools.islice(items, args.skip, args.skip + args.count):
-        if args.id and args.id != item['id']:
-             continue
-        if args.start_id:
-            if args.start_id == item['id'] or started_id:
-                started_id = True
-            else:
-                continue
+    for item in items:
+        # pprint.pprint(item)
+        uri = get_access_uri(item)
+        logging.debug('processing %s - %s', item['id'], uri)
+        if uri in seen:
+            pprint.pprint(item)
+            raise RuntimeError('already seen:' + uri)
+        seen.append(uri)
+        if uri in skip:
+            logging.info('Skipping from skip list %s %s', item['id'], uri)
+            continue
         try:
             # pprint.pprint(item)
             check_license(item)
@@ -214,8 +222,6 @@ if __name__ == '__main__':
                 item['Local time'] = int(item['Local time'])
             if args.upload:
                 upload(site_beta, item)
-            if args.id:
-                break
         except RuntimeError as e:
             logging.error('%s, %s, %s' % (e, item['id'], get_access_uri(item)))
             # print(e, '-', item['id'], get_access_uri(item))
