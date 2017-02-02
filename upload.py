@@ -193,6 +193,7 @@ if __name__ == '__main__':
     site_beta = pywikibot.Site('beta', 'commons')
     site_beta.login()
     items = biodwca.read_items(args.dwca_zip)
+    items = sorted(items, key=lambda item: item['id'])
     # item = next(items)
     xls = read_xls_by_species_id(args.species_xls)
 
