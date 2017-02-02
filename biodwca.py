@@ -23,7 +23,8 @@ def read_items(filename):
 
 
 def xml_item(name, text):
-  print("  <%s>%s</%s>" % (name, text, name))
+    print("  <%s>%s</%s>" % (name, text, name))
+
 
 if __name__ == '__main__':
     CC_BY = '//creativecommons.org/licenses/by/3.0/'
