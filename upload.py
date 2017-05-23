@@ -195,41 +195,52 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     site = pywikibot.Site('commons', 'commons')
-    site_beta = pywikibot.Site('beta', 'commons')
-    site_beta.login()
+    site.login()
+    # site_beta = pywikibot.Site('beta', 'commons')
+    # site_beta.login()
     items = biodwca.read_items(args.dwca_zip)
     items = sorted(items, key=lambda item: item['id'])
     # item = next(items)
     xls = read_xls_by_species_id(args.species_xls)
 
-    skip = '''
-http://bio.acousti.ca/sites/bio.acousti.ca/files/576_15_Locusta_migratoria_migratorioides_253b.wav
-http://bio.acousti.ca/sites/bio.acousti.ca/files/437_6_Chorthippus_yersini_723r1.wav
-http://bio.acousti.ca/sites/bio.acousti.ca/files/566_9_Ancistrura_nigrovittata_638r7.wav
-http://bio.acousti.ca/sites/bio.acousti.ca/files/582_4_Chorthippus_yersini_805r2_14-Dec.wav
-'''
-    skip = skip.strip().split('\n')
+    skip = []
+    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/597_7_Tettigonia_viridissima_003r5.wav') # too big
+    # skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/MHV%20973%20P.haglundi%20nr%20Barberton%20%232.wav') # invalid file name
+    # duplicated
+    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/600_2_Chorthippus_biguttulus%2C_Euchorthippus_declivus%2C_Chorthippus_vagans_14r2.wav')
+    # duplicated
+    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/571_3_Chorthippus_nevadensis_717r60.wav')
+    # duplicate of BioAcoustica_MHV_247_M.laticlavia_Groblershoop_2.flac (same file - differnet filename)
+    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/MHV%20247%20M.laticlavia%20Groblershoop%20%231.wav')
+    # too big
+    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/898_6_Decticus_verrucivorus_108.wav')
+    # duplicated
+    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/894_4_Stenobothrus_stigmaticus_%26_Gomphocerippus_rufus_41.wav')
+    # too big
+    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/900_8_Gryllotalpa_gryllotalpa_141.wav')
     # print(skip)
     seen = []
     started_id = False
     for item in items:
         # pprint.pprint(item)
+        xls_key = (item['http://purl.org/dc/terms/title'], item['id'])
         uri = get_access_uri(item)
-        logging.debug('processing %s - %s', item['id'], uri)
-        if uri in seen:
-            pprint.pprint(item)
-            raise RuntimeError('already seen:' + uri)
-        seen.append(uri)
+        logging.info('processing %s - %s', xls_key, uri)
         if uri in skip:
             logging.info('Skipping from skip list %s %s', item['id'], uri)
             continue
+        if uri in seen:
+            pprint.pprint(item)
+            logging.error('already seen, skipping: %s', uri)
+            continue
+        seen.append(uri)
         try:
             # pprint.pprint(item)
             check_license(item)
             # print(item['http://purl.org/dc/terms/identifier'],
             #       item['http://rs.tdwg.org/ac/terms/accessURI'])
             check_category(site, item)
-            xls_key = (item['http://purl.org/dc/terms/title'], item['id'])
+            # logging.info('processing %s', xls_key)
             if xls_key in xls:
                 item.update(xls[xls_key])
             else:
@@ -238,8 +249,8 @@ http://bio.acousti.ca/sites/bio.acousti.ca/files/582_4_Chorthippus_yersini_805r2
             if type(item['Local time']) == float:
                 item['Local time'] = int(item['Local time'])
             if args.upload:
-                upload(site_beta, item)
-        except RuntimeError as e:
+                upload(site, item)
+        except (RuntimeError, subprocess.CalledProcessError) as e:
             logging.error('%s, %s, %s' % (e, item['id'], get_access_uri(item)))
             # print(e, '-', item['id'], get_access_uri(item))
         except:
