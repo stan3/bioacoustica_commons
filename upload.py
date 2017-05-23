@@ -40,11 +40,14 @@ def upload_or_update(site, url, filename, text):
         if imagepage.text != text:
             # print(repr(imagepage.text))
             # print(repr(text))
-            logging.info('updating page http:%s', imagepage.permalink())
-            # print(imagepage.permalink())
-            #print(imagepage.latest_file_info)
-            imagepage.text = text
-            imagepage.save()
+            if imagepage.userName() != 'BioUploadBot':
+                logging.warn('want to update page http:%s but editted by someone else' % imagepage.permalink())
+            else:
+                logging.info('updating page http:%s', imagepage.permalink())
+                # print(imagepage.permalink())
+                #print(imagepage.latest_file_info)
+                imagepage.text = text
+                imagepage.save()
         else:
             logging.debug('page unchanged http:%s', imagepage.permalink())
     else:
