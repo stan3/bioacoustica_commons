@@ -127,6 +127,8 @@ def get_access_uri(item):
 
 def upload(site, item):
     filename = "BioAcoustica_%s.flac" % (item['http://purl.org/dc/terms/title'].rsplit('.', 1)[0])
+    filename = filename.replace('#', '')
+    filename = filename.replace(':', '-')
     item['wikimedia_uri'] = get_access_uri(item)
     item = dict((make_id(key), value) for key, value in item.items())
     try:
