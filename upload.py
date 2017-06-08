@@ -28,7 +28,8 @@ def upload_wav_as_flac(url, site, imagepage):
         flac_filename = os.path.join(tempdir, 'out.flac')
         subprocess.check_call(['curl', '--retry', '3', '-o', wav_filename, url])
         subprocess.check_call(['flac', '--best', '-o', flac_filename, wav_filename])
-        site.upload(imagepage, source_filename=flac_filename, comment='Initial upload of file')
+        site.upload(imagepage, source_filename=flac_filename,
+            comment='Initial upload of file', chunk_size=10 * 1024 * 1024)
         logging.info('creating page http:%s', imagepage.permalink())
     finally:
         shutil.rmtree(tempdir, True)
@@ -204,20 +205,14 @@ if __name__ == '__main__':
     xls = read_xls_by_species_id(args.species_xls)
 
     skip = []
-    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/597_7_Tettigonia_viridissima_003r5.wav') # too big
-    # skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/MHV%20973%20P.haglundi%20nr%20Barberton%20%232.wav') # invalid file name
     # duplicated
     skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/600_2_Chorthippus_biguttulus%2C_Euchorthippus_declivus%2C_Chorthippus_vagans_14r2.wav')
     # duplicated
     skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/571_3_Chorthippus_nevadensis_717r60.wav')
     # duplicate of BioAcoustica_MHV_247_M.laticlavia_Groblershoop_2.flac (same file - differnet filename)
     skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/MHV%20247%20M.laticlavia%20Groblershoop%20%231.wav')
-    # too big
-    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/898_6_Decticus_verrucivorus_108.wav')
     # duplicated
     skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/894_4_Stenobothrus_stigmaticus_%26_Gomphocerippus_rufus_41.wav')
-    # too big
-    skip.append('http://bio.acousti.ca/sites/bio.acousti.ca/files/900_8_Gryllotalpa_gryllotalpa_141.wav')
     # print(skip)
     seen = []
     started_id = False
