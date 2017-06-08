@@ -184,21 +184,16 @@ def upload(site, item):
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
 
-    # httplib2 comes with it's on ca_certs that doesn't work with beta's letencrypt cert
-    # this hack makes it use the default system one
-    for thread in pywikibot.comms.http.threads:
-        thread.http.ca_certs = False
-
     parser = argparse.ArgumentParser()
     parser.add_argument('dwca_zip')
     parser.add_argument('species_xls')
     parser.add_argument('--upload', action='store_true')
     args = parser.parse_args()
 
-    site = pywikibot.Site('commons', 'commons')
-    site.login()
-    # site_beta = pywikibot.Site('beta', 'commons')
+    # site_beta = pywikibot.Site(fam='betacommons', user='BioUploadBot')
     # site_beta.login()
+    site = pywikibot.Site(fam='commons', user='BioUploadBot')
+    site.login()
     items = biodwca.read_items(args.dwca_zip)
     items = sorted(items, key=lambda item: item['id'])
     # item = next(items)
