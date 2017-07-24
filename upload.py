@@ -84,12 +84,13 @@ def make_id(s):
     return re.sub('[. ():%&-]', '', re.sub('/+', '_', s))
 
 
-def check_category(site, item):
+def check_category(site, item, missing_categories):
     # if item['http://rs.tdwg.org/dwc/terms/taxonRank'] == 'Subspecies':
     #     category = item['http://rs.tdwg.org/dwc/terms/scientificName'].rsplit(maxsplit=1)[0]
     #     logging.verbose('Subspecies', item['http://rs.tdwg.org/dwc/terms/scientificName'])
     # else:
     category = item['http://rs.tdwg.org/dwc/terms/scientificName']
+    item['original_classification'] = category
 
     if category == 'Mesambria dubia':
         # a synonmn
@@ -102,9 +103,12 @@ def check_category(site, item):
     if category.endswith(' sp.'):
         category = category[:-len(' sp.')]
 
+    if category in missing_categories:
+        category = missing_categories[category]
+
     if not pywikibot.Category(site, 'Category:' + category).exists():
         raise RuntimeError("Category doesn't exist: \"%s\"" % category)
-    item['wikipedia_category'] = category
+    item['commons_category'] = category
 
 
 def check_license(item):
@@ -172,9 +176,10 @@ def upload(site, item):
  |microphone reflector = %(MicrophonePowerSupplyReflector)s
  |microphone preamplifier = %(MicrophonePowerSupplyPreamplifier)s
  |microphone filter = %(MicrophonePowerSupplyFilter)s
+ |original classification = %(original_classification)s
 }}
 
-[[Category:%(wikipedia_category)s]]
+[[Category:%(commons_category)s]]
 [[Category:Files from BioAcoustica]]""" % item)
     except KeyError:
         pprint.pprint(item)
@@ -187,17 +192,23 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('dwca_zip')
     parser.add_argument('species_xls')
+    parser.add_argument('missing_categories')
     parser.add_argument('--upload', action='store_true')
     args = parser.parse_args()
 
-    # site_beta = pywikibot.Site(fam='betacommons', user='BioUploadBot')
-    # site_beta.login()
+    site_beta = pywikibot.Site('beta', fam='commons', user='BioUploadBot')
+    site_beta.login()
     site = pywikibot.Site(fam='commons', user='BioUploadBot')
     site.login()
     items = biodwca.read_items(args.dwca_zip)
     items = sorted(items, key=lambda item: item['id'])
     # item = next(items)
     xls = read_xls_by_species_id(args.species_xls)
+
+    import categories
+    missing_categories = {}
+    for existing, new, checked in categories.read_categories(args.missing_categories):
+        missing_categories[existing] = new
 
     skip = []
     # duplicated
@@ -229,7 +240,7 @@ if __name__ == '__main__':
             check_license(item)
             # print(item['http://purl.org/dc/terms/identifier'],
             #       item['http://rs.tdwg.org/ac/terms/accessURI'])
-            check_category(site, item)
+            check_category(site, item, missing_categories)
             # logging.info('processing %s', xls_key)
             if xls_key in xls:
                 item.update(xls[xls_key])
