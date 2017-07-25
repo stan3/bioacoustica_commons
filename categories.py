@@ -7,7 +7,7 @@ def read_categories(filename):
     with open(filename) as f:
         for line in f:
             split = line.strip().split(',', 3)
-            if split[0].startwith('#'):
+            if split[0].startswith('#'):
                 continue
             if len(split) > 1:
                 checked = len(split) == 3 and split[2] == 'checked'
