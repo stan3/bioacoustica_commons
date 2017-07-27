@@ -107,7 +107,8 @@ def check_category(site, item, missing_categories):
         category = missing_categories[category]
 
     if not pywikibot.Category(site, 'Category:' + category).exists():
-        raise RuntimeError("Category doesn't exist: \"%s\"" % category)
+        raise RuntimeError("Category doesn't exist: \"%s\"" %
+            item['original_classification'])
     item['commons_category'] = category
 
 
