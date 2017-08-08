@@ -35,22 +35,29 @@ def upload_wav_as_flac(url, site, imagepage):
         shutil.rmtree(tempdir, True)
 
 
+def page_link(page):
+    # based on the page.permalink code
+    return 'https://' + ''.join([page.site.hostname(), page.site.article_path, page.title(asUrl=True)])
+
+
 def upload_or_update(site, url, filename, text):
     imagepage = pywikibot.FilePage(site, filename)  # normalizes filename
     if imagepage.exists():
         if imagepage.text != text:
             # print(repr(imagepage.text))
             # print(repr(text))
-            if imagepage.userName() != 'BioUploadBot':
-                logging.warn('want to update page http:%s but editted by someone else' % imagepage.permalink())
-            else:
-                logging.info('updating page http:%s', imagepage.permalink())
+            if imagepage.userName() == 'BioUploadBot' or (
+                    imagepage.revision_count() == 3 and
+                        imagepage.latest_revision.comment == '[[Help:Cat-a-lot|Cat-a-lot]]: Removing from [[Category:Pages using Information template with parsing errors]]'):
+                logging.info('updating page %s', page_link(imagepage))
                 # print(imagepage.permalink())
                 #print(imagepage.latest_file_info)
                 imagepage.text = text
                 imagepage.save()
+            else:
+                logging.warn('want to update page %s but editted by someone else' % page_link(imagepage))
         else:
-            logging.debug('page unchanged http:%s', imagepage.permalink())
+            logging.debug('page unchanged %s', page_link(imagepage))
     else:
         imagepage.text = text
         # https://phabricator.wikimedia.org/diffusion/PWBC/browse/master/scripts/upload.py
@@ -150,7 +157,7 @@ def upload(site, item):
 {{BioAcousticaSample
  |description        = Sound recording of %(http_rstdwgorg_dwc_terms_scientificName)s
  |date               = %(DateRecordedStart)s
- |source             = %(wikimedia_uri)s
+ |source             = %(http_purlorg_dc_terms_source)s
  |permission         = {{%(wikimedia_permission_template)s}}
  |copyright holder   = %(CopyrightHolder)s
  |recorder           = %(Recorder)s
