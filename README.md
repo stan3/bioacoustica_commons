@@ -1,5 +1,5 @@
 ## Setup
 
     python3 -m venv venv
-    . bin/activate
+    . venv/bin/activate
     pip install -r requirements.txt
